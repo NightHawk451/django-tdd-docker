@@ -14,16 +14,13 @@ def test_movie_model():
     assert movie.updated_date
     assert str(movie) == movie.title
 
+
 @pytest.mark.django_db
 def test_add_movie_invalid_json(client):
     movies = Movie.objects.all()
     assert len(movies) == 0
 
-    resp = client.post(
-        "/api/movies/",
-        {},
-        content_type="application/json"
-    )
+    resp = client.post("/api/movies/", {}, content_type="application/json")
     assert resp.status_code == 400
 
     movies = Movie.objects.all()
@@ -37,16 +34,14 @@ def test_add_movie_invalid_json_keys(client):
 
     resp = client.post(
         "/api/movies/",
-        {
-            "title": "The Big Lebowski",
-            "genre": "comedy",
-        },
-        content_type="application/json"
+        {"title": "The Big Lebowski", "genre": "comedy",},
+        content_type="application/json",
     )
     assert resp.status_code == 400
 
     movies = Movie.objects.all()
     assert len(movies) == 0
+
 
 @pytest.mark.django_db
 def test_get_single_movie(client):
@@ -55,13 +50,6 @@ def test_get_single_movie(client):
     assert resp.status_code == 200
     assert resp.data["title"] == "The Big Lebowski"
 
-
-@pytest.mark.django_db
-def test_get_single_movie(client, add_movie):
-    movie = add_movie(title="The Big Lebowski", genre="comedy", year="1998")
-    resp = client.get(f"/api/movies/{movie.id}/")
-    assert resp.status_code == 200
-    assert resp.data["title"] == "The Big Lebowski"
 
 @pytest.mark.django_db
 def test_get_all_movies(client, add_movie):
